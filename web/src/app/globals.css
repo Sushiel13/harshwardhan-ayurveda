@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+html { scroll-behavior: smooth; }
+body { @apply bg-ivory text-ink font-sans antialiased; }
+h1, h2, h3, .font-display { font-optical-sizing: auto; }
+
+@layer components {
+  .container-x { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
+  .eyebrow { @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-brass-600; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed; }
+  .btn-primary { @apply btn bg-forest-800 text-ivory hover:bg-forest-700 shadow-soft; }
+  .btn-gold { @apply btn bg-brass-500 text-forest-950 hover:bg-brass-400; }
+  .btn-ghost { @apply btn border border-forest-800/15 text-forest-800 hover:border-forest-800/40 hover:bg-white; }
+  .btn-danger { @apply btn bg-red-700 text-white hover:bg-red-800; }
+  .card { @apply rounded-2xl bg-white border border-forest-900/[0.06] shadow-soft; }
+  .input { @apply w-full rounded-xl border border-forest-900/15 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-forest-500 focus:ring-4 focus:ring-forest-500/10; }
+  .label { @apply mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-soft; }
+  .chip { @apply inline-flex items-center rounded-full bg-forest-50 px-2.5 py-1 text-[11px] font-semibold text-forest-700; }
+  .gold-rule { @apply h-px w-16 bg-gradient-to-r from-brass-500 to-transparent; }
+  .grain { background-image: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px); background-size: 3px 3px; }
+}
