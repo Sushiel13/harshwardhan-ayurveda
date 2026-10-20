@@ -41,6 +41,9 @@ jobs:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           API_BASE_URL: ${{ secrets.API_BASE_URL }}
         run: |
+          for v in SUPABASE_URL SUPABASE_ANON_KEY API_BASE_URL; do
+            if [ -n "${!v}" ]; then echo "::notice title=Secret check::$v is set"; else echo "::warning title=Secret check::$v is NOT set - a placeholder will be used"; fi
+          done
           cat > env.json <<EOF
           {
             "SUPABASE_URL": "${SUPABASE_URL:-https://placeholder.supabase.co}",
