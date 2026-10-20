@@ -28,8 +28,13 @@ void main() {
 /// Returns a problem description if the build-time settings are missing, else null.
 String? configProblem() {
   final url = AppConfig.supabaseUrl, key = AppConfig.supabaseAnonKey;
-  if (url.isEmpty || key.isEmpty) return 'SUPABASE_URL / SUPABASE_ANON_KEY were not provided when this app was built.';
-  if (url.contains('placeholder') || key == 'placeholder') return 'This app was built with placeholder settings — the GitHub secrets SUPABASE_URL and SUPABASE_ANON_KEY were not found.';
+  final missing = <String>[
+    if (url.isEmpty || url.contains('placeholder')) 'SUPABASE_URL',
+    if (key.isEmpty || key == 'placeholder') 'SUPABASE_ANON_KEY',
+  ];
+  if (missing.isNotEmpty) {
+    return 'This app was built without ${missing.join(' and ')}. Add ${missing.length == 1 ? 'it' : 'them'} as GitHub repository secrets and rebuild.';
+  }
   if (!url.startsWith('https://')) return 'SUPABASE_URL must start with https:// (got "$url").';
   return null;
 }
