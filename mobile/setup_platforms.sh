@@ -7,6 +7,8 @@ ORG="in.harshwardhanayurveda"
 NAME="harshwardhan_ayurveda"
 
 flutter create --org "$ORG" --project-name "$NAME" --platforms android,ios .
+# Remove the template test (it references the sample counter app, not this one)
+rm -f test/widget_test.dart
 
 MANIFEST=android/app/src/main/AndroidManifest.xml
 # 1) Internet permission (release builds need it explicitly)

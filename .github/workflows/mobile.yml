@@ -64,7 +64,17 @@ jobs:
           exit 0
 
       - name: Build APK
-        run: flutter build apk --release --dart-define-from-file=env.json
+        run: |
+          set +e
+          flutter build apk --release --dart-define-from-file=env.json 2>&1 | tee build.log
+          code=${PIPESTATUS[0]}
+          if [ "$code" != "0" ]; then
+            # Put the important part of the Gradle/Flutter error into one annotation
+            msg=$(grep -E -A12 "What went wrong|error:|Error:|FAILURE|Exception" build.log | head -120)
+            msg="${msg//'%'/'%25'}"; msg="${msg//$'\n'/'%0A'}"; msg="${msg//$'\r'/}"
+            echo "::error title=APK build failed::${msg}"
+          fi
+          exit $code
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
