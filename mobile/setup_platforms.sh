@@ -27,7 +27,31 @@ for f in android/app/build.gradle android/app/build.gradle.kts; do
   fi
 done
 
-# 4) iOS display name
+# 4) Compile every Android module (including plugins) against SDK 36.
+#    Newer AndroidX libraries require it; some plugins still declare an older compileSdk.
+if [ -f android/build.gradle.kts ] && ! grep -q "HIA_FORCE_SDK" android/build.gradle.kts; then
+  cat >> android/build.gradle.kts <<'KTS'
+
+// HIA_FORCE_SDK: align compileSdk across app and plugins
+subprojects {
+    val forceSdk: Project.() -> Unit = {
+        extensions.findByName("android")?.withGroovyBuilder { "compileSdkVersion"(36) }
+    }
+    if (state.executed) forceSdk() else afterEvaluate { forceSdk() }
+}
+KTS
+elif [ -f android/build.gradle ] && ! grep -q "HIA_FORCE_SDK" android/build.gradle; then
+  cat >> android/build.gradle <<'GROOVY'
+
+// HIA_FORCE_SDK: align compileSdk across app and plugins
+subprojects { p ->
+    def forceSdk = { if (p.hasProperty('android')) { p.android.compileSdkVersion 36 } }
+    if (p.state.executed) { forceSdk() } else { p.afterEvaluate { forceSdk() } }
+}
+GROOVY
+fi
+
+# 5) iOS display name
 PLIST=ios/Runner/Info.plist
 if [ -f "$PLIST" ]; then
   /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName 'Harshwardhan Ayurveda'" "$PLIST" 2>/dev/null || true
