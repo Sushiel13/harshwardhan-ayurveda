@@ -15,9 +15,9 @@ jobs:
       run:
         working-directory: mobile
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -50,7 +50,18 @@ jobs:
           EOF
 
       - name: Analyze (errors fail the build, warnings don't)
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+        run: |
+          set +e
+          dart analyze --format=machine lib > analyze.txt 2>&1
+          code=$?
+          # Surface each error as a GitHub annotation on the file/line
+          grep '^ERROR|' analyze.txt | head -50 | while IFS='|' read -r sev typ rule file line col len msg; do
+            rel="mobile/${file#*/mobile/}"
+            echo "::error file=${rel},line=${line},col=${col}::[${rule}] ${msg}"
+          done
+          echo "Errors: $(grep -c '^ERROR|' analyze.txt)  Warnings: $(grep -c '^WARNING|' analyze.txt)"
+          if grep -q '^ERROR|' analyze.txt; then exit 1; fi
+          exit 0
 
       - name: Build APK
         run: flutter build apk --release --dart-define-from-file=env.json
