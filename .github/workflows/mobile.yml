@@ -37,9 +37,9 @@ jobs:
       # build compile for checking even before secrets exist.
       - name: Write env.json
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          API_BASE_URL: ${{ secrets.API_BASE_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || vars.SUPABASE_ANON_KEY }}
+          API_BASE_URL: ${{ secrets.API_BASE_URL || vars.API_BASE_URL }}
         run: |
           for v in SUPABASE_URL SUPABASE_ANON_KEY API_BASE_URL; do
             if [ -n "${!v}" ]; then echo "::notice title=Secret check::$v is set"; else echo "::warning title=Secret check::$v is NOT set - a placeholder will be used"; fi
